@@ -15,7 +15,12 @@ export const create = async(req, res) => {
 export const getQuesByQuesNo = async(req, res) => {
     try{
             const qnoparam = Number(req.params.qno);
-            const userExist = await Questions.find({qnumber: qnoparam});
+            const userExist = await Questions.findOne({qnumber: qnoparam});
+            if(!userExist)
+            {
+                return res.status(404).json({ errorMessage: "Question not found" });
+
+            }
             res.status(200).json(userExist);
     }
     catch(error)

@@ -2,6 +2,9 @@ import { Paper, Typography, Box, Button,Stack } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { useState } from "react";
 import './Exambar.css';
+import {getQuestionByNumber} from '../api.js';
+import { useEffect } from "react";
+import axios from "axios";
 const OptionButton = styled('button')(({ theme }) => ({
   width: '100%',
   backgroundColor: '#a1b4c8ff', // primary blue
@@ -38,8 +41,26 @@ const SmallButton = styled('button')(({ theme }) => ({
 
 function Exambar()
 {
+  
     const [qno,setqno] = useState(1);
-    const [qcontent, setqcon] = useState("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.");
+    const [qdata, setqdata] = useState();
+    useEffect(()=>{
+      const fetchData = async() =>{
+        try{
+          const response = await axios.get(`http://localhost:8080/api/question/${qno}`);
+          setqdata(response.data);
+        }
+        catch (err)
+        {
+          console.log("Error while fetching the data",err);
+        } 
+      };
+      fetchData();
+    },[qno])
+
+    const options = qdata?.options?.map((opt,index) => ( 
+        <OptionButton>{opt}</OptionButton>
+    ))
     return (
         <Box
       sx={{
@@ -72,13 +93,14 @@ function Exambar()
           {qno}Q.
         </Typography>
         <Typography variant="body1"  mb = {3}>
-          {qcontent}
+          {qdata?.qcontent || "Loading..."}
         </Typography>
         <Stack spacing={3}>
-            <OptionButton>Option A</OptionButton>
+            {/* <OptionButton>Option A</OptionButton>
             <OptionButton>Option B</OptionButton>
             <OptionButton>Option C</OptionButton>
-            <OptionButton>Option D</OptionButton>
+            <OptionButton>Option D</OptionButton> */}
+            {options}
             </Stack>
         <Box
             sx={{
@@ -89,8 +111,8 @@ function Exambar()
               gap: 2, // space between buttons
             }}
           >
-           <SmallButton>Previous Question</SmallButton>
-            <SmallButton>Next Question</SmallButton>
+           <SmallButton onClick={() => setqno((prev) => Math.max(prev-1,1))}>Previous Question</SmallButton>
+            <SmallButton onClick={() => setqno((prev) => prev + 1)}>Next Question</SmallButton>
           </Box>
               </Paper>
             </Box>
