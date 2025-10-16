@@ -1,7 +1,6 @@
 import { Paper, Typography, Box, Button,Stack } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { useState } from "react";
-import './Exambar.css';
 import {getQuestionByNumber} from '../api.js';
 import { useEffect } from "react";
 import axios from "axios";
